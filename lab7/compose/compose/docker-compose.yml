@@ -13,7 +13,7 @@ services:
       REDIS_PORT: 6379
       REDIS_PASSWORD: redispass
     ports: 
-      - "5000:5000"
+      - 5000:5000
   cache:
     image: redis:latest
     restart: always
@@ -22,18 +22,16 @@ services:
     command: redis-server --save 20 1 --loglevel warning --requirepass redispass
     volumes: 
       - cache:/data
-  frontend:
-    container_name: front
+  front:
+    container_name: fronted
     build: ./frontend/front
     volumes:
-      - './:/app'
+      - './front:/app'
       - '/app/node_modules'
     ports:
       - 3000:3000
-    stdin_open: true
     environment:
       - CHOKIDAR_USEPOLLING=true
-    command: npm start
 
 volumes:
   cache:
