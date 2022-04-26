@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  api:
+    build:
+      dockerfile: Dockerfile
+      context: C:\Users\Szymon\OneDrive\Pulpit\2rok4sem\TechnologieChmurowe\Technologie-Chmurowe\lab6\compose\compose\backend
+    depends_on:
+      - cache
+    environment: 
+      PGPORT: 5000
+      REDIS_HOST: cache
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: redispass
+    ports: 
+      - "5000:5000"
+  cache:
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning --requirepass redispass
+    volumes: 
+      - cache:/data
+  frontend:
+    container_name: front
+    build: ./frontend/front
+    volumes:
+      - './:/app'
+      - '/app/node_modules'
+    ports:
+      - 3000:3000
+    stdin_open: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    command: npm start
+
+volumes:
+  cache:
+    driver: local
