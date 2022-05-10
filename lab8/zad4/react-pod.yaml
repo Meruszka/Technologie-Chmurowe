@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: reactpod
+  labels:
+    app: MyApp
+spec:
+  containers:
+  - name: nodeapp
+    image: merski001/my_node_app

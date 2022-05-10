@@ -37,5 +37,5 @@ app.post('/new', async (req, res) => {
   const key = req.body.key
   const val = req.body.value
   await client.set(key, val)
-  res.send('Poszło2')
+  res.send('Poszło')
 })

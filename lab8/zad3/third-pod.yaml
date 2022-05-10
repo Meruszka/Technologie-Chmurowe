@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: zad3
+  labels:
+    app: MyApp
+spec:
+  containers:
+  - name: nginx3
+    image: nginx:alpine
