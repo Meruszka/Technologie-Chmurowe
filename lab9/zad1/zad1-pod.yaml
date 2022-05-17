@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata: 
+  name: reactapp
+spec:
+  selector:
+    matchLabels: 
+      app: reactapp
+
+  replicas: 1
+  template: 
+    metadata:
+      labels: 
+        app: reactapp
+        
+    spec:
+     containers:
+     - name: myreact
+       image: merski001/react-docker
