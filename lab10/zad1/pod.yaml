@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo
+spec:
+  template:
+    metadata:
+      labels: 
+        app: demo
+    spec: 
+      containers:
+        - name: posgres
+          image: postgres:alpine
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgresdata
+          env:
+          - name: POSTGRES_USER
+            valueFrom:
+              configMapKeyRef:
+                  name: postgres-configmap
+                  key: POSTGRES_USER
+
+          - name: POSTGRES_DB
+            valueFrom:
+              configMapKeyRef:
+                  name: postgres-configmap
+                  key: POSTGRES_DB
+
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: postgres-secret
+                key: password
+      volumes:
+      - name: postgresdata
+        persistentVolumeClaim:
+          claimName: postgres-volume-claim     
+  replicas: 2 
+  selector:
+    matchLabels: 
+      app: demo
