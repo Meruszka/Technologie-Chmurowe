@@ -25,6 +25,7 @@ function App() {
             .post("http://localhost:5000/posts", values, { headers })
             .then((response) => {
               console.log(response);
+              setPosts([...posts, response.data]);
             });
         }}
       >
@@ -46,6 +47,7 @@ function App() {
         {posts.map((post) => (
           <div key={post._id}>
             <h2>{post.text}</h2>
+            <button>Edit</button>
           </div>
         ))}
       </div>

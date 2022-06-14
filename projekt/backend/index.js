@@ -7,9 +7,8 @@ const cors = require("cors");
 require("dotenv").config();
 
 app.use(express.json());
+app.use(cors());
 app.use("/posts", posts);
-
-app.use(cors({ origin: "http://localhost:3000", optionsSuccessStatus: 200 }));
 
 const dbConnData = {
   host: process.env.MONGO_HOST || "127.0.0.1",
@@ -28,7 +27,7 @@ const client = redis.createClient({
 client.hGet = util.promisify(client.hGet);
 const exec = mongoose.Query.prototype.exec;
 
-mongoose.Query.prototype.cache = function (options = { time: 60 }) {
+mongoose.Query.prototype.cache = function (options = { time: 10 }) {
   this.useCache = true;
   this.time = options.time;
   this.hashKey = JSON.stringify(options.key || this.mongooseCollection.name);

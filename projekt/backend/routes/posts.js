@@ -5,7 +5,7 @@ const Post = require("../models/Post");
 
 router.get("/", async (req, res) => {
   Post.find()
-    .cache({ time: 60 })
+    .cache({ time: 10 })
     .then((result) => res.send(result))
     .catch((err) => console.error(err));
 });
@@ -13,12 +13,13 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   const id = req.params.id;
   Post.findOne({ _id: id })
-    .cache({ time: 60 })
+    .cache({ time: 10 })
     .then((result) => res.send(result))
     .catch((err) => console.error(err));
 });
 
 router.post("/", async (req, res) => {
+  console.log(req.body);
   Post.create(req.body)
     .then((result) => res.send(result))
     .catch((err) => console.log(err));
