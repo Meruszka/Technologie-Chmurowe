@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 
 function App() {
   const [posts, setPosts] = useState([]);
+  const [edit, setEdit] = useState(false);
   const headers = {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
@@ -18,6 +19,19 @@ function App() {
       })
       .catch((err) => console.error(err));
   }, []);
+  function DeletePost(id) {
+    axios
+      .delete(`http://localhost:5000/posts/${id}`, { headers })
+      .then((res) => {
+        console.log(res);
+        setPosts(posts.filter((post) => post._id !== id));
+      })
+      .catch((err) => console.error(err));
+  }
+
+  function EditPost(id, post) {
+    setEdit(id);
+  }
   return (
     <div className="App">
       <Formik
@@ -50,7 +64,44 @@ function App() {
         {posts.map((post) => (
           <div key={post._id}>
             <h2>{post.text}</h2>
-            <button>Edit</button>
+            <button onClick={() => EditPost(post._id)}>Edit</button>
+            {edit === post._id ? (
+              <div>
+                <Formik
+                  initialValues={{ text: post.text }}
+                  onSubmit={(values) => {
+                    axios
+                      .put(`http://localhost:5000/posts/${post._id}`, values, {
+                        headers,
+                      })
+                      .then((res) => {
+                        console.log(res);
+                        setPosts(
+                          posts.map((post) =>
+                            post._id === res.data._id
+                              ? { text: values.text }
+                              : post
+                          )
+                        );
+                      })
+                      .catch((err) => console.error(err));
+                  }}
+                >
+                  {({ values, handleChange, handleSubmit }) => (
+                    <form onSubmit={handleSubmit}>
+                      <input
+                        type="text"
+                        name="text"
+                        onChange={handleChange}
+                        value={values.text}
+                      />
+                      <button type="submit">Submit</button>
+                    </form>
+                  )}
+                </Formik>
+              </div>
+            ) : null}
+            <button onClick={() => DeletePost(post._id)}>Usun</button>
           </div>
         ))}
       </div>
