@@ -27,10 +27,13 @@ const client = redis.createClient({
 client.hGet = util.promisify(client.hGet);
 const exec = mongoose.Query.prototype.exec;
 
-mongoose.Query.prototype.cache = function (options = { time: 10 }) {
+mongoose.Query.prototype.cache = function (
+  options = { time: 10, delete: false }
+) {
   this.useCache = true;
   this.time = options.time;
   this.hashKey = JSON.stringify(options.key || this.mongooseCollection.name);
+  this.delete = options.delete;
 
   return this;
 };
@@ -39,13 +42,15 @@ mongoose.Query.prototype.exec = async function () {
   if (!this.useCache) {
     return await exec.apply(this, arguments);
   }
+  if (this.delete) {
+    client.del(this.hashKey);
+    return await exec.apply(this, arguments);
+  }
 
   const key = JSON.stringify({
     ...this.getQuery(),
   });
-
   const cacheValue = await client.hGet(this.hashKey, key);
-
   if (cacheValue) {
     const doc = JSON.parse(cacheValue);
 
@@ -56,7 +61,6 @@ mongoose.Query.prototype.exec = async function () {
   }
 
   const result = await exec.apply(this, arguments);
-  console.log(this.time);
   client.hSet(this.hashKey, key, JSON.stringify(result));
   client.expire(this.hashKey, this.time);
 

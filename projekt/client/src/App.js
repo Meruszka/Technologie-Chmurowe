@@ -12,7 +12,10 @@ function App() {
   useEffect(() => {
     axios
       .get("http://localhost:5000/posts", { headers })
-      .then((res) => setPosts(res.data))
+      .then((res) => {
+        setPosts(res.data);
+        console.log(res.data);
+      })
       .catch((err) => console.error(err));
   }, []);
   return (

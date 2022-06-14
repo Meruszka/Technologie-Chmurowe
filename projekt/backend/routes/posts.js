@@ -5,7 +5,7 @@ const Post = require("../models/Post");
 
 router.get("/", async (req, res) => {
   Post.find()
-    .cache({ time: 10 })
+    .cache()
     .then((result) => res.send(result))
     .catch((err) => console.error(err));
 });
@@ -13,13 +13,12 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   const id = req.params.id;
   Post.findOne({ _id: id })
-    .cache({ time: 10 })
+    .cache()
     .then((result) => res.send(result))
     .catch((err) => console.error(err));
 });
 
 router.post("/", async (req, res) => {
-  console.log(req.body);
   Post.create(req.body)
     .then((result) => res.send(result))
     .catch((err) => console.log(err));
@@ -28,6 +27,7 @@ router.post("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   const id = req.params.id;
   Post.findOneAndDelete({ _id: id })
+    .cache({ delete: true })
     .then((result) => res.send(result))
     .catch((err) => console.error(err));
 });
@@ -35,6 +35,7 @@ router.delete("/:id", async (req, res) => {
 // Używać z rozwagą (usuwa wszystko)
 router.delete("/", async (req, res) => {
   Post.deleteMany()
+    .cache({ delete: true })
     .then((result) => res.send(result))
     .catch((err) => console.error(err));
 });
@@ -42,7 +43,6 @@ router.delete("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   const id = req.params.id;
   Post.findOneAndUpdate({ _id: id }, req.body)
-    .cache({ time: 60 })
     .then((result) => res.send(result))
     .catch((err) => console.error(err));
 });
