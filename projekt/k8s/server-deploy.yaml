@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server-deploy
+  labels:
+    app: server-deploy
+spec:
+  selector:
+    matchLabels:
+      app: server-deploy
+  template:
+    metadata:
+      labels:
+        app: server-deploy
+    spec:
+      containers:
+      - name: server-deploy
+        image: merski001/backend
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 5000
+        env:
+          - name: MONGO_DATABASE
+            value: db
+          - name: MONGO_HOST
+            value: mongodb-cluster-ip-service
+          - name: MONGO_PORT
+            value: "27017"
+
+          - name: REDIS_HOST
+            value: redis-cluster-ip-service
+          - name: REDIS_PORT
+            value: "6379"
