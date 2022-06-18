@@ -3,6 +3,10 @@ kind: Deployment
 metadata:
   name: demo
 spec:
+  replicas: 2 
+  selector:
+    matchLabels: 
+      app: demo
   template:
     metadata:
       labels: 
@@ -36,7 +40,4 @@ spec:
       - name: postgresdata
         persistentVolumeClaim:
           claimName: postgres-volume-claim     
-  replicas: 2 
-  selector:
-    matchLabels: 
-      app: demo
+

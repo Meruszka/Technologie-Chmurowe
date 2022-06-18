@@ -10,7 +10,9 @@ const password = process.env.REDIS_PASSWORD;
 const redisPort = process.env.REDIS_PORT;
 
 const app = express();
-app.use(bodyParser.json())
+
+app.use(bodyParser.json());
+
 const client = redis.createClient({
   url: `redis://default:${password}@${host}:${redisPort}`
 });

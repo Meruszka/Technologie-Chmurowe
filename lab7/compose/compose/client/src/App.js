@@ -7,7 +7,7 @@ function App() {
   }, [])
   return (
     <div className="App">
-      jest wiadomośćdd:
+      jest wiadomość:
         {message}
     </div>
   );
