@@ -2,6 +2,8 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: mypv
+  labels:
+    type: local
 spec:
   storageClassName: manual
   capacity:
@@ -10,5 +12,4 @@ spec:
     - ReadWriteOnce
   hostPath:
       path: "/run/desktop/mnt/host/c/Users/Szymon/OneDrive/Pulpit/2rok4sem/TechnologieChmurowe/Technologie-Chmurowe/projekt/tmp"
-  claimRef:
-      name: mongo
+

@@ -12,7 +12,7 @@ function App() {
   };
   useEffect(() => {
     axios
-      .get("http://localhost:5000/posts", { headers })
+      .get("/api/posts", { headers })
       .then((res) => {
         setPosts(res.data);
         console.log(res.data);
@@ -21,7 +21,7 @@ function App() {
   }, []);
   function DeletePost(id) {
     axios
-      .delete(`http://localhost:5000/posts/${id}`, { headers })
+      .delete(`/api/posts/${id}`, { headers })
       .then((res) => {
         console.log(res);
         setPosts(posts.filter((post) => post._id !== id));
@@ -38,12 +38,10 @@ function App() {
         initialValues={{ text: "" }}
         onSubmit={(values) => {
           console.log(values);
-          axios
-            .post("http://localhost:5000/posts", values, { headers })
-            .then((response) => {
-              console.log(response);
-              setPosts([...posts, response.data]);
-            });
+          axios.post("/api/posts", values, { headers }).then((response) => {
+            console.log(response);
+            setPosts([...posts, response.data]);
+          });
         }}
       >
         {({ values, handleChange, handleSubmit }) => (
@@ -71,7 +69,7 @@ function App() {
                   initialValues={{ text: post.text }}
                   onSubmit={(values) => {
                     axios
-                      .put(`http://localhost:5000/posts/${post._id}`, values, {
+                      .put(`/api/posts/${post._id}`, values, {
                         headers,
                       })
                       .then((res) => {

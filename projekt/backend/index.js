@@ -1,6 +1,6 @@
+const Redis = require("ioredis");
 const express = require("express");
 const app = express();
-const redis = require("redis");
 const util = require("util");
 const posts = require("./routes/posts");
 const cors = require("cors");
@@ -18,13 +18,14 @@ const dbConnData = {
 
 const mongoose = require("mongoose");
 
-const client = redis.createClient({
-  legacyMode: true,
+const client = new Redis({
   host: process.env.REDIS_HOST || "127.0.0.1",
   port: process.env.REDIS_PORT || 6379,
 });
+client.on("connect", () => {
+  console.log("Redis connected");
+});
 
-client.hGet = util.promisify(client.hGet);
 const exec = mongoose.Query.prototype.exec;
 
 mongoose.Query.prototype.cache = function (
@@ -39,18 +40,19 @@ mongoose.Query.prototype.cache = function (
 };
 
 mongoose.Query.prototype.exec = async function () {
+  const key = JSON.stringify({
+    ...this.getQuery(),
+  });
+
   if (!this.useCache) {
     return await exec.apply(this, arguments);
   }
   if (this.delete) {
-    client.del(this.hashKey);
+    client.del(key);
     return await exec.apply(this, arguments);
   }
 
-  const key = JSON.stringify({
-    ...this.getQuery(),
-  });
-  const cacheValue = await client.hGet(this.hashKey, key);
+  await client.get(key).then((res) => (cacheValue = res));
   if (cacheValue) {
     const doc = JSON.parse(cacheValue);
 
@@ -61,8 +63,7 @@ mongoose.Query.prototype.exec = async function () {
   }
 
   const result = await exec.apply(this, arguments);
-  client.hSet(this.hashKey, key, JSON.stringify(result));
-  client.expire(this.hashKey, this.time);
+  client.set(key, JSON.stringify(result), "EX", this.time);
 
   console.log("Response from MongoDB");
   return result;
@@ -76,12 +77,9 @@ mongoose
     console.log(
       `Connected to MongoDB. Database name: "${response.connections[0].name}"`
     );
-    client.connect().then(() => {
-      console.log("Connected to Redis");
-      const port = process.env.PORT || 5000;
-      app.listen(port, () => {
-        console.log(`API server listening at http://localhost:${port}`);
-      });
+    const port = process.env.PORT || 5000;
+    app.listen(port, () => {
+      console.log(`API server listening`);
     });
   })
   .catch((error) => console.error("Error connecting to MongoDB", error));

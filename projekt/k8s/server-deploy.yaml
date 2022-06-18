@@ -23,14 +23,13 @@ spec:
         ports:
         - containerPort: 5000
         env:
-          - name: MONGO_DATABASE
-            value: db
-          - name: MONGO_HOST
-            value: mongodb-cluster-ip-service
-          - name: MONGO_PORT
-            value: "27017"
-
           - name: REDIS_HOST
             value: redis-cluster-ip-service
           - name: REDIS_PORT
             value: "6379"
+          - name: MONGO_DATABASE
+            value: mongodb
+          - name: MONGO_HOST
+            value: mongodb-cluster-ip-service
+          - name: MONGO_PORT
+            value: "27017"
