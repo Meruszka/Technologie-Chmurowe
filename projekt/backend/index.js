@@ -48,7 +48,7 @@ mongoose.Query.prototype.exec = async function () {
     return await exec.apply(this, arguments);
   }
   if (this.delete) {
-    client.del(key);
+    await client.del(key);
     return await exec.apply(this, arguments);
   }
 
@@ -64,7 +64,6 @@ mongoose.Query.prototype.exec = async function () {
 
   const result = await exec.apply(this, arguments);
   client.set(key, JSON.stringify(result), "EX", this.time);
-
   console.log("Response from MongoDB");
   return result;
 };
