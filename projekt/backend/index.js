@@ -52,6 +52,8 @@ mongoose.Query.prototype.exec = async function () {
     return await exec.apply(this, arguments);
   }
 
+  const result = await exec.apply(this, arguments);
+
   await client.get(key).then((res) => (cacheValue = res));
   if (cacheValue) {
     const doc = JSON.parse(cacheValue);
@@ -62,7 +64,6 @@ mongoose.Query.prototype.exec = async function () {
       : new this.model(doc);
   }
 
-  const result = await exec.apply(this, arguments);
   client.set(key, JSON.stringify(result), "EX", this.time);
   console.log("Response from MongoDB");
   return result;
