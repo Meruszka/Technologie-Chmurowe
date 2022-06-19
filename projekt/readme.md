@@ -21,7 +21,6 @@ Umożliwia połączenie pomiędzy serverem, a resztą klastra.
 # Server
 
 Tworzy obraz pobrany z Docker Hub odpowiedzialny za backend.
-Tylko tutaj repliki zostały ustawione na 2
 
 # MongoDB-Cluster-IP-Service
 
