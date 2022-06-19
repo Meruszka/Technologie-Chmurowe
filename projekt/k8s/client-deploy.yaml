@@ -5,6 +5,7 @@ metadata:
   labels:
     app: client-deploy
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: client-deploy

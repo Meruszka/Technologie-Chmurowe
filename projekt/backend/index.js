@@ -25,7 +25,9 @@ const client = new Redis({
 client.on("connect", () => {
   console.log("Redis connected");
 });
-
+client.on("error", (err) => {
+  console.log("Error " + err);
+});
 const exec = mongoose.Query.prototype.exec;
 
 mongoose.Query.prototype.cache = function (
@@ -53,6 +55,7 @@ mongoose.Query.prototype.exec = async function () {
   }
 
   const result = await exec.apply(this, arguments);
+  client.set(key, JSON.stringify(result), "EX", this.time);
 
   await client.get(key).then((res) => (cacheValue = res));
   if (cacheValue) {
@@ -64,7 +67,6 @@ mongoose.Query.prototype.exec = async function () {
       : new this.model(doc);
   }
 
-  client.set(key, JSON.stringify(result), "EX", this.time);
   console.log("Response from MongoDB");
   return result;
 };
